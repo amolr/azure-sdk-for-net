@@ -1,5 +1,5 @@
 {
-  "version": "2.0.2-preview",
+  "version": "2.0.5",
   "title": "Microsoft Azure Key Vault Extensions",
   "description": "Microsoft Azure Key Vault Extensions Class Library",
   "authors": [ "Microsoft" ],
@@ -15,14 +15,15 @@
   "buildOptions": {
     "delaySign": true,
     "publicSign": false,
-    "keyFile": "../../../tools/MSSharedLibKey.snk"
+    "keyFile": "../../../tools/MSSharedLibKey.snk", 
+    "xmlDoc": true
   },
 
   "dependencies": {
-    "Microsoft.Azure.KeyVault": "[2.0.4-preview, 3.0)",
-    "Microsoft.Azure.KeyVault.Core": "[2.0.3-preview, 3.0)",
-    "Microsoft.Azure.KeyVault.Cryptography": "[2.0.2-preview, 3.0)",
-    "Microsoft.Azure.KeyVault.WebKey": "[2.0.2-preview, 3.0)"
+    "Microsoft.Azure.KeyVault": "[2.1.0-preview, 3.0)",
+    "Microsoft.Azure.KeyVault.Core": "[2.0.4, 3.0)",
+    "Microsoft.Azure.KeyVault.Cryptography": "[2.0.5, 3.0)",
+    "Microsoft.Azure.KeyVault.WebKey": "[2.0.4, 3.0)"
   },
 
   "frameworks": {
