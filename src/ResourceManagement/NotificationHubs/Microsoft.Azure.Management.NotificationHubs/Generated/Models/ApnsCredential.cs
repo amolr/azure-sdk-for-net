@@ -27,12 +27,24 @@ namespace Microsoft.Azure.Management.NotificationHubs.Models
         /// <param name="certificateKey">The certificate key.</param>
         /// <param name="endpoint">The endpoint of this credential.</param>
         /// <param name="thumbprint">The Apns certificate Thumbprint</param>
-        public ApnsCredential(string apnsCertificate = default(string), string certificateKey = default(string), string endpoint = default(string), string thumbprint = default(string))
+        /// <param name="keyId">A 10-character key identifier (kid) key,
+        /// obtained from your developer account</param>
+        /// <param name="appName">The name of the application</param>
+        /// <param name="appId">The issuer (iss) registered claim key, whose
+        /// value is your 10-character Team ID, obtained from your developer
+        /// account</param>
+        /// <param name="token">Provider Authentication Token, obtained
+        /// through your developer account</param>
+        public ApnsCredential(string apnsCertificate = default(string), string certificateKey = default(string), string endpoint = default(string), string thumbprint = default(string), string keyId = default(string), string appName = default(string), string appId = default(string), string token = default(string))
         {
             ApnsCertificate = apnsCertificate;
             CertificateKey = certificateKey;
             Endpoint = endpoint;
             Thumbprint = thumbprint;
+            KeyId = keyId;
+            AppName = appName;
+            AppId = appId;
+            Token = token;
         }
 
         /// <summary>
@@ -58,6 +70,33 @@ namespace Microsoft.Azure.Management.NotificationHubs.Models
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.thumbprint")]
         public string Thumbprint { get; set; }
+
+        /// <summary>
+        /// Gets or sets a 10-character key identifier (kid) key, obtained
+        /// from your developer account
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.keyId")]
+        public string KeyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the application
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.appName")]
+        public string AppName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the issuer (iss) registered claim key, whose value is
+        /// your 10-character Team ID, obtained from your developer account
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.appId")]
+        public string AppId { get; set; }
+
+        /// <summary>
+        /// Gets or sets provider Authentication Token, obtained through your
+        /// developer account
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.token")]
+        public string Token { get; set; }
 
     }
 }

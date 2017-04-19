@@ -84,6 +84,14 @@ namespace NotificationHubs.Tests.ScenarioTests
                         PackageSid = "ms-app://s-1-15-2-1817505189-427745171-3213743798-2985869298-800724128-1004923984-4143860699",
                         SecretKey = "w7TBprR-9tJxn9mUOdK4PPHLCAzSYFhp",
                         WindowsLiveEndpoint = @"http://pushtestservice.cloudapp.net/LiveID/accesstoken.srf"
+                    },
+                    ApnsCredential = new ApnsCredential()
+                    {
+                        Token = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpVB15km4qskA5Ra5XvdtOwWPvaXIhVVQZdonzINh+hGgCgYIKoZIzj0DAQehRANCAASS3ek04J20BqA6WWDlD6+xd3dJEifhW87wI0nnkfUB8LDb424TiWlzGIgnxV79hb3QHCAUNsPdBfLLF+Od8yqL",
+                        KeyId = "TXRXD9P6K7",
+                        AppName = "Sample",
+                        AppId = "EF9WEB9D5K",
+                        Endpoint = "https://api.push.apple.com:443/3/device"
                     }
                 };
 
@@ -114,7 +122,11 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.WnsCredential.PackageSid, updateNotificationHubParameter.WnsCredential.PackageSid);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.WnsCredential.SecretKey, updateNotificationHubParameter.WnsCredential.SecretKey);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.WnsCredential.WindowsLiveEndpoint, updateNotificationHubParameter.WnsCredential.WindowsLiveEndpoint);
-
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.KeyId, updateNotificationHubParameter.ApnsCredential.KeyId);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.AppName, updateNotificationHubParameter.ApnsCredential.AppName);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.AppId, updateNotificationHubParameter.ApnsCredential.AppId);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.Token, updateNotificationHubParameter.ApnsCredential.Token);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.Endpoint, updateNotificationHubParameter.ApnsCredential.Endpoint);
 
                 //Delete notificationHub
                 NotificationHubsManagementClient.NotificationHubs.Delete(resourceGroup, namespaceName, notificationHubName);
