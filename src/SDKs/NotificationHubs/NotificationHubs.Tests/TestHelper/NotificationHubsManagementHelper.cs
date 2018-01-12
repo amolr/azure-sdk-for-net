@@ -6,16 +6,16 @@ namespace NotificationHubs.Tests.TestHelper
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Cryptography;
+    using System.Threading.Tasks;
     using Microsoft.Azure.Management.NotificationHubs;
     using Microsoft.Azure.Management.NotificationHubs.Models;
     using Microsoft.Azure.Management.Resources;
     using Microsoft.Azure.Management.Resources.Models;
     using Microsoft.Rest.ClientRuntime.Azure.TestFramework;
     using Newtonsoft.Json;
-    using System.Security.Cryptography;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json.Serialization;
     using Newtonsoft.Json.Converters;
+    using Newtonsoft.Json.Serialization;
 
     public static class NotificationHubsManagementHelper
     {
@@ -88,7 +88,7 @@ namespace NotificationHubs.Tests.TestHelper
             string location,
             string scaleUnit = null)
         {
-            var namespaceParameter = new NamespaceCreateOrUpdateParameters()
+            var namespaceParameter = new NamespaceResource()
             {
                 Location = location,
                 NamespaceType = NamespaceType.NotificationHub

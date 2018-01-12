@@ -12,26 +12,34 @@ namespace Microsoft.Azure.Management.NotificationHubs.Models
     using System.Linq;
 
     /// <summary>
-    /// Parameters supplied to the Patch Namespace operation.
+    /// The properties of the resource
     /// </summary>
-    public partial class NamespacePatchParameters
+    public partial class NHResource : TrackedResource
     {
         /// <summary>
-        /// Initializes a new instance of the NamespacePatchParameters class.
+        /// Initializes a new instance of the NHResource class.
         /// </summary>
-        public NamespacePatchParameters()
+        public NHResource()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the NamespacePatchParameters class.
+        /// Initializes a new instance of the NHResource class.
         /// </summary>
-        /// <param name="tags">Resource tags</param>
+        /// <param name="location">The geo-location where the resource
+        /// lives</param>
+        /// <param name="id">Fully qualified resource Id for the resource. Ex -
+        /// /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}</param>
+        /// <param name="name">The name of the resource</param>
+        /// <param name="type">The type of the resource. Ex-
+        /// Microsoft.Compute/virtualMachines or
+        /// Microsoft.Storage/storageAccounts.</param>
+        /// <param name="tags">Resource tags.</param>
         /// <param name="sku">The sku of the created namespace</param>
-        public NamespacePatchParameters(IDictionary<string, string> tags = default(IDictionary<string, string>), Sku sku = default(Sku))
+        public NHResource(string location, string id = default(string), string name = default(string), string type = default(string), IDictionary<string, string> tags = default(IDictionary<string, string>), Sku sku = default(Sku))
+            : base(location, id, name, type, tags)
         {
-            Tags = tags;
             Sku = sku;
             CustomInit();
         }
@@ -40,12 +48,6 @@ namespace Microsoft.Azure.Management.NotificationHubs.Models
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets resource tags
-        /// </summary>
-        [JsonProperty(PropertyName = "tags")]
-        public IDictionary<string, string> Tags { get; set; }
 
         /// <summary>
         /// Gets or sets the sku of the created namespace
@@ -59,8 +61,9 @@ namespace Microsoft.Azure.Management.NotificationHubs.Models
         /// <exception cref="Rest.ValidationException">
         /// Thrown if validation fails
         /// </exception>
-        public virtual void Validate()
+        public override void Validate()
         {
+            base.Validate();
             if (Sku != null)
             {
                 Sku.Validate();

@@ -36,7 +36,7 @@ namespace NotificationHubs.Tests.ScenarioTests
                 //Create a namespace
                 var namespaceName = TestUtilities.GenerateName(NotificationHubsManagementHelper.NamespacePrefix);
                 var createNamespaceResponse = NotificationHubsManagementClient.Namespaces.CreateOrUpdate(resourceGroup, namespaceName,
-                    new NamespaceCreateOrUpdateParameters()
+                    new NamespaceResource()
                     {
                         Location = location,
                     });
@@ -61,7 +61,7 @@ namespace NotificationHubs.Tests.ScenarioTests
 
                 var createNotificationHubResponse = NotificationHubsManagementClient.NotificationHubs.CreateOrUpdate(resourceGroup, namespaceName,
                     notificationHubName,
-                    new NotificationHubCreateOrUpdateParameters()
+                    new NotificationHub()
                     {
                         Location = location
                     });
@@ -71,61 +71,57 @@ namespace NotificationHubs.Tests.ScenarioTests
                 //Create a notificationHub AuthorizationRule
                 var authorizationRuleName = TestUtilities.GenerateName(NotificationHubsManagementHelper.AuthorizationRulesPrefix);
                 string createPrimaryKey = HttpMockServer.GetVariable("CreatePrimaryKey", NotificationHubsManagementHelper.GenerateRandomKey());
-                var createAutorizationRuleParameter = new SharedAccessAuthorizationRuleCreateOrUpdateParameters()
+                //IList<System.Nullable<AccessRights>> rights = new List<AccessRights>() {AccessRights.Listen, AccessRights.Send};
+
+                var createAutorizationRuleParameter = new SharedAccessAuthorizationRule()
                 {
                     Location = location,
-                    Properties = new SharedAccessAuthorizationRuleProperties()
-                    {
-                        Rights = new List<AccessRights?>() { AccessRights.Listen, AccessRights.Send },
-                    }
+                    Rights = new List<AccessRights?>() { AccessRights.Listen, AccessRights.Send}
                 };
 
-                var createNotificationHubAuthorizationRuleResponse = NotificationHubsManagementClient.NotificationHubs.CreateOrUpdateAuthorizationRule(resourceGroup,
+                var createNotificationHubAuthorizationRuleResponse = NotificationHubsManagementClient.HubAuthorizationRules.CreateOrUpdate(resourceGroup,
                     namespaceName, notificationHubName, authorizationRuleName, createAutorizationRuleParameter);
                 Assert.NotNull(createNotificationHubAuthorizationRuleResponse);
                 Assert.Equal(createNotificationHubAuthorizationRuleResponse.Name, authorizationRuleName);
-                Assert.True(createNotificationHubAuthorizationRuleResponse.Rights.Count == createAutorizationRuleParameter.Properties.Rights.Count);
-                foreach (var right in createAutorizationRuleParameter.Properties.Rights)
+                Assert.True(createNotificationHubAuthorizationRuleResponse.Rights.Count == createAutorizationRuleParameter.Rights.Count);
+                foreach (var right in createAutorizationRuleParameter.Rights)
                 {
                     Assert.True(createNotificationHubAuthorizationRuleResponse.Rights.Any(r => r == right));
                 }
 
                 TestUtilities.Wait(TimeSpan.FromSeconds(5));
                 //Get created notificationHub AuthorizationRules
-                var getNotificationHubAuthorizationRulesResponse = NotificationHubsManagementClient.NotificationHubs.GetAuthorizationRule(resourceGroup, namespaceName,
+                var getNotificationHubAuthorizationRulesResponse = NotificationHubsManagementClient.HubAuthorizationRules.Get(resourceGroup, namespaceName,
                     notificationHubName, authorizationRuleName);
                 Assert.NotNull(getNotificationHubAuthorizationRulesResponse);
                 Assert.Equal(getNotificationHubAuthorizationRulesResponse.Name, authorizationRuleName);
-                Assert.True(getNotificationHubAuthorizationRulesResponse.Rights.Count == createAutorizationRuleParameter.Properties.Rights.Count);
-                foreach (var right in createAutorizationRuleParameter.Properties.Rights)
+                Assert.True(getNotificationHubAuthorizationRulesResponse.Rights.Count == createAutorizationRuleParameter.Rights.Count);
+                foreach (var right in createAutorizationRuleParameter.Rights)
                 {
                     Assert.True(getNotificationHubAuthorizationRulesResponse.Rights.Any(r => r == right));
                 }
 
                 //Get all notificationHub AuthorizationRules 
-                var getAllNotificationHubAuthorizationRulesResponse = NotificationHubsManagementClient.NotificationHubs.ListAuthorizationRules(resourceGroup, namespaceName,
+                var getAllNotificationHubAuthorizationRulesResponse = NotificationHubsManagementClient.AuthorizationRules.ListByNotificationHub(resourceGroup, namespaceName,
                     notificationHubName);
                 Assert.NotNull(getAllNotificationHubAuthorizationRulesResponse);
-                Assert.True(getAllNotificationHubAuthorizationRulesResponse.Count() > 1);
-                Assert.True(getAllNotificationHubAuthorizationRulesResponse.Any(ns => ns.Name == authorizationRuleName));
+                Assert.True(getAllNotificationHubAuthorizationRulesResponse.Value.Count() > 1);
+                Assert.True(getAllNotificationHubAuthorizationRulesResponse.Value.Any(ns => ns.Name == authorizationRuleName));
 
                 //Update notificationHub authorizationRule 
-                var updateNotificationHubAuthorizationRuleParameter = new SharedAccessAuthorizationRuleCreateOrUpdateParameters()
+                var updateNotificationHubAuthorizationRuleParameter = new SharedAccessAuthorizationRule()
                 {
                     Location = location,
-                    Properties = new SharedAccessAuthorizationRuleProperties()
-                    {
-                        Rights = new List<AccessRights?>() { AccessRights.Listen },
-                    }
+                    Rights = new List<AccessRights?>() { AccessRights.Listen }
                 };
 
-                var updateNotificationHubAuthorizationRuleResponse = NotificationHubsManagementClient.NotificationHubs.CreateOrUpdateAuthorizationRule(resourceGroup,
+                var updateNotificationHubAuthorizationRuleResponse = NotificationHubsManagementClient.HubAuthorizationRules.CreateOrUpdate(resourceGroup,
                     namespaceName, notificationHubName, authorizationRuleName, updateNotificationHubAuthorizationRuleParameter);
 
                 Assert.NotNull(updateNotificationHubAuthorizationRuleResponse);
                 Assert.Equal(authorizationRuleName, updateNotificationHubAuthorizationRuleResponse.Name);
-                Assert.True(updateNotificationHubAuthorizationRuleResponse.Rights.Count == updateNotificationHubAuthorizationRuleParameter.Properties.Rights.Count);
-                foreach (var right in updateNotificationHubAuthorizationRuleParameter.Properties.Rights)
+                Assert.True(updateNotificationHubAuthorizationRuleResponse.Rights.Count == updateNotificationHubAuthorizationRuleParameter.Rights.Count);
+                foreach (var right in updateNotificationHubAuthorizationRuleParameter.Rights)
                 {
                     Assert.True(updateNotificationHubAuthorizationRuleResponse.Rights.Any(r => r.Equals(right)));
                 }
@@ -133,12 +129,12 @@ namespace NotificationHubs.Tests.ScenarioTests
                 TestUtilities.Wait(TimeSpan.FromSeconds(5));
 
                 //Get the updated notificationHub AuthorizationRule
-                var getNotificationHubAuthorizationRuleResponse = NotificationHubsManagementClient.NotificationHubs.GetAuthorizationRule(resourceGroup, namespaceName,
+                var getNotificationHubAuthorizationRuleResponse = NotificationHubsManagementClient.HubAuthorizationRules.Get(resourceGroup, namespaceName,
                     notificationHubName, authorizationRuleName);
                 Assert.NotNull(getNotificationHubAuthorizationRuleResponse);
                 Assert.Equal(authorizationRuleName, getNotificationHubAuthorizationRuleResponse.Name);
-                Assert.True(getNotificationHubAuthorizationRuleResponse.Rights.Count == updateNotificationHubAuthorizationRuleParameter.Properties.Rights.Count);
-                foreach (var right in updateNotificationHubAuthorizationRuleParameter.Properties.Rights)
+                Assert.True(getNotificationHubAuthorizationRuleResponse.Rights.Count == updateNotificationHubAuthorizationRuleParameter.Rights.Count);
+                foreach (var right in updateNotificationHubAuthorizationRuleParameter.Rights)
                 {
                     Assert.True(getNotificationHubAuthorizationRuleResponse.Rights.Any(r => r.Equals(right)));
                 }
@@ -156,7 +152,7 @@ namespace NotificationHubs.Tests.ScenarioTests
                     PolicyKey = "primary KEY"
                 };
 
-                var regenerateKeys = NotificationHubsManagementClient.NotificationHubs.RegenerateKeys(resourceGroup, namespaceName, notificationHubName, authorizationRuleName, policyKey);
+                var regenerateKeys = NotificationHubsManagementClient.AuthorizationRules.RegenerateKeys(resourceGroup, namespaceName, notificationHubName, authorizationRuleName, policyKey);
                 Assert.NotNull(regenerateKeys);
                 Assert.Equal(regenerateKeys.KeyName, authorizationRuleName);
                 Assert.NotNull(regenerateKeys.PrimaryConnectionString);
@@ -186,12 +182,12 @@ namespace NotificationHubs.Tests.ScenarioTests
                 //Assert.Equal(listKeysAfterRegenerateResponse.PrimaryConnectionString, regenerateKeys.PrimaryConnectionString);
 
                 //Delete notificationHub authorizationRule
-                NotificationHubsManagementClient.NotificationHubs.DeleteAuthorizationRule(resourceGroup, namespaceName, notificationHubName, authorizationRuleName);
+                NotificationHubsManagementClient.HubAuthorizationRules.Delete(resourceGroup, namespaceName, notificationHubName, authorizationRuleName);
 
                 TestUtilities.Wait(TimeSpan.FromSeconds(5));
                 try
                 {
-                    NotificationHubsManagementClient.NotificationHubs.GetAuthorizationRule(resourceGroup, namespaceName, notificationHubName, authorizationRuleName);
+                    NotificationHubsManagementClient.HubAuthorizationRules.Get(resourceGroup, namespaceName, notificationHubName, authorizationRuleName);
                     Assert.True(false, "this step should have failed");
                 }
                 catch (CloudException ex)

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using Microsoft.Azure.Management.NotificationHubs;
 
 namespace NotificationHubs.Tests.ScenarioTests
 {
-    using Microsoft.Azure.Management.NotificationHubs;
     using Microsoft.Azure.Management.Resources;
     using Microsoft.Rest.ClientRuntime.Azure.TestFramework;
     using TestHelper;
@@ -67,7 +67,7 @@ namespace NotificationHubs.Tests.ScenarioTests
             }
 
             NamespaceName = TestUtilities.GenerateName(NotificationHubsManagementHelper.NamespacePrefix);
-            this.NotificationHubsManagementClient.TryCreateNamespace(ResourceGroupName, NamespaceName, Location);
+            NotificationHubsManagementClient.TryCreateNamespace(ResourceGroupName, NamespaceName, Location);
         }
 
         public bool ActivateNamespace(string resourceGroup, string namespaceName)

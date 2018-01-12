@@ -32,7 +32,7 @@ namespace NotificationHubs.Tests.ScenarioTests
                 var namespaceName = TestUtilities.GenerateName(NotificationHubsManagementHelper.NamespacePrefix);
 
                 var createNamespaceResponse = this.NotificationHubsManagementClient.Namespaces.CreateOrUpdate(resourceGroup, namespaceName,
-                    new NamespaceCreateOrUpdateParameters()
+                    new NamespaceResource()
                     {
                         Location = location,
                         NamespaceType = NamespaceType.NotificationHub,
@@ -58,20 +58,20 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.Equal("Standard", getNamespaceResponse.Sku.Name, StringComparer.CurrentCultureIgnoreCase);
 
                 //Get all namespaces created within a resourceGroup
-                var getAllNamespacesResponse = NotificationHubsManagementClient.Namespaces.List(resourceGroup);
+                var getAllNamespacesResponse = NotificationHubsManagementClient.Namespaces.ListByResourceGroup(resourceGroup);
                 Assert.NotNull(getAllNamespacesResponse);
-                Assert.True(getAllNamespacesResponse.Count() >= 1);
-                Assert.True(getAllNamespacesResponse.Any(ns => ns.Name == namespaceName));
-                Assert.True(getAllNamespacesResponse.All(ns => ns.Id.Contains(resourceGroup)));
+                Assert.True(getAllNamespacesResponse.Value.Count() >= 1);
+                Assert.True(getAllNamespacesResponse.Value.Any(ns => ns.Name == namespaceName));
+                Assert.True(getAllNamespacesResponse.Value.All(ns => ns.Id.Contains(resourceGroup)));
 
                 //Get all namespaces created within the subscription irrespective of the resourceGroup
-                getAllNamespacesResponse = NotificationHubsManagementClient.Namespaces.ListAll();
+                getAllNamespacesResponse = NotificationHubsManagementClient.Namespaces.List();
                 Assert.NotNull(getAllNamespacesResponse);
-                Assert.True(getAllNamespacesResponse.Count() >= 1);
-                Assert.True(getAllNamespacesResponse.Any(ns => ns.Name == namespaceName));
+                Assert.True(getAllNamespacesResponse.Value.Count() >= 1);
+                Assert.True(getAllNamespacesResponse.Value.Any(ns => ns.Name == namespaceName));
 
                 //Update namespace tags and make the namespace critical
-                var updateNamespaceParameter = new NamespaceCreateOrUpdateParameters()
+                var updateNamespaceParameter = new NamespaceResource()
                 {
                     Location = location,
                     Tags = new Dictionary<string, string>()
@@ -122,7 +122,7 @@ namespace NotificationHubs.Tests.ScenarioTests
                     Sku = new Sku { Name = SkuName.Basic}
                 };
 
-                var updateNamespacePatchResponse = NotificationHubsManagementClient.Namespaces.Patch(resourceGroup, namespaceName, updateNamespacePatchParameter);
+                var updateNamespacePatchResponse = NotificationHubsManagementClient.Namespaces.Update(resourceGroup, namespaceName, updateNamespacePatchParameter);
 
                 Assert.NotNull(updateNamespacePatchResponse);
                 Assert.Equal(updateNamespacePatchResponse.Tags.Count, 2);

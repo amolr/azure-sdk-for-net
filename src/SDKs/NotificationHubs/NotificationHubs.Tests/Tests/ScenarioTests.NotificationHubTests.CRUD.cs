@@ -35,7 +35,7 @@ namespace NotificationHubs.Tests.ScenarioTests
                 var namespaceName = TestUtilities.GenerateName(NotificationHubsManagementHelper.NamespacePrefix);
 
                 var createNamespaceResponse = NotificationHubsManagementClient.Namespaces.CreateOrUpdate(resourceGroup, namespaceName,
-                    new NamespaceCreateOrUpdateParameters()
+                    new NamespaceResource()
                     {
                         Location = location
                     });
@@ -52,7 +52,7 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.Equal("Succeeded", getNamespaceResponse.ProvisioningState, StringComparer.CurrentCultureIgnoreCase);
                 Assert.Equal("Active", getNamespaceResponse.Status, StringComparer.CurrentCultureIgnoreCase);
 
-                var createParameter = new NotificationHubCreateOrUpdateParameters()
+                var createParameter = new NotificationHub()
                 {
                     Location = location,
                     WnsCredential = new WnsCredential()
@@ -64,8 +64,8 @@ namespace NotificationHubs.Tests.ScenarioTests
                     ApnsCredential = new ApnsCredential()
                     {
                         KeyId = "TXRXD9P6K7",
-                        AppId = "EF9WEB9D5K",
-                        AppName = "Sample",
+                        TeamId = "EF9WEB9D5K",
+                        BundleId = "Sample",
                         Token = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpVB15km4qskA5Ra5XvdtOwWPvaXIhVVQZdonzINh+hGgCgYIKoZIzj0DAQehRANCAASS3ek04J20BqA6WWDlD6+xd3dJEifhW87wI0nnkfUB8LDb424TiWlzGIgnxV79hb3QHCAUNsPdBfLLF+Od8yqL",
                         Endpoint = "https://api.push.apple.com:443/3/device"
                     }
@@ -82,11 +82,11 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.Equal(getNotificationHubResponse.Name, notificationHubName);
 
                 //Get all namespaces created within a namespace
-                var getAllNotificationHubsResponse = NotificationHubsManagementClient.NotificationHubs.List(resourceGroup, namespaceName);
+                var getAllNotificationHubsResponse = NotificationHubsManagementClient.NotificationHubs.ListByNamespace(resourceGroup, namespaceName);
                 Assert.NotNull(getAllNotificationHubsResponse);
-                Assert.True(getAllNotificationHubsResponse.Count() >= 1);
-                Assert.True(getAllNotificationHubsResponse.Any(nh => string.Compare(nh.Name, notificationHubName, true) == 0));
-                Assert.True(getAllNotificationHubsResponse.All(nh => nh.Id.Contains(resourceGroup)));
+                Assert.True(getAllNotificationHubsResponse.Value.Count() >= 1);
+                Assert.True(getAllNotificationHubsResponse.Value.Any(nh => string.Compare(nh.Name, notificationHubName, true) == 0));
+                Assert.True(getAllNotificationHubsResponse.Value.All(nh => nh.Id.Contains(resourceGroup)));
 
                 var getNotificationHubPnsCredentialsResponse = NotificationHubsManagementClient.NotificationHubs.GetPnsCredentials(resourceGroup, namespaceName, notificationHubName);
                 Assert.NotNull(getNotificationHubPnsCredentialsResponse);
@@ -98,12 +98,12 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.WnsCredential.WindowsLiveEndpoint, createParameter.WnsCredential.WindowsLiveEndpoint);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.KeyId, createParameter.ApnsCredential.KeyId);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.Token, createParameter.ApnsCredential.Token);
-                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.AppId, createParameter.ApnsCredential.AppId);
-                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.AppName, createParameter.ApnsCredential.AppName);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.TeamId, createParameter.ApnsCredential.TeamId);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.BundleId, createParameter.ApnsCredential.BundleId);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.Endpoint, createParameter.ApnsCredential.Endpoint);
 
                 //Update notificationHub tags and add PNS credentials
-                var updateNotificationHubParameter = new NotificationHubCreateOrUpdateParameters()
+                var updateNotificationHubParameter = new NotificationHub()
                 {
                     Location = location,
                     Tags = new Dictionary<string, string>()
@@ -122,8 +122,8 @@ namespace NotificationHubs.Tests.ScenarioTests
                     ApnsCredential = new ApnsCredential()
                     {
                         KeyId = "TXRXD9P6K7",
-                        AppId = "EF9WEB9D5K",
-                        AppName = "Sample2",
+                        TeamId = "EF9WEB9D5K",
+                        BundleId = "Sample2",
                         Token = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpVB15km4qskA5Ra5XvdtOwWPvaXIhVVQZdonzINh+hGgCgYIKoZIzj0DAQehRANCAASS3ek04J20BqA6WWDlD6+xd3dJEifhW87wI0nnkfUB8LDb424TiWlzGIgnxV79hb3QHCAUNsPdBfLLF+Od8yqL",
                         Endpoint = "https://api.push.apple.com:443/3/device"
                     }
@@ -158,8 +158,8 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.WnsCredential.WindowsLiveEndpoint, updateNotificationHubParameter.WnsCredential.WindowsLiveEndpoint);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.KeyId, updateNotificationHubParameter.ApnsCredential.KeyId);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.Token, updateNotificationHubParameter.ApnsCredential.Token);
-                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.AppId, updateNotificationHubParameter.ApnsCredential.AppId);
-                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.AppName, updateNotificationHubParameter.ApnsCredential.AppName);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.TeamId, updateNotificationHubParameter.ApnsCredential.TeamId);
+                Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.BundleId, updateNotificationHubParameter.ApnsCredential.BundleId);
                 Assert.Equal(getNotificationHubPnsCredentialsResponse.ApnsCredential.Endpoint, updateNotificationHubParameter.ApnsCredential.Endpoint);
 
                 //Delete notificationHub
@@ -188,7 +188,7 @@ namespace NotificationHubs.Tests.ScenarioTests
             }
         }
 
-        private List<string> CreateNotificationHubs(string location, string resourceGroup, string namespaceName, int count, NotificationHubCreateOrUpdateParameters parameter)
+        private List<string> CreateNotificationHubs(string location, string resourceGroup, string namespaceName, int count, NotificationHub parameter)
         {
             List<string> notificationHubNameList = new List<string>();
 

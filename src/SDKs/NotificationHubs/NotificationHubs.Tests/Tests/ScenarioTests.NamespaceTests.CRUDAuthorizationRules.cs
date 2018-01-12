@@ -36,7 +36,7 @@ namespace NotificationHubs.Tests.ScenarioTests
                 //Create a namespace
                 var namespaceName = TestUtilities.GenerateName(NotificationHubsManagementHelper.NamespacePrefix);
                 var createNamespaceResponse = NotificationHubsManagementClient.Namespaces.CreateOrUpdate(resourceGroup, namespaceName,
-                    new NamespaceCreateOrUpdateParameters()
+                    new NamespaceResource()
                     {
                         Location = location
                     });
@@ -60,29 +60,26 @@ namespace NotificationHubs.Tests.ScenarioTests
                 //Create a namespace AuthorizationRule
                 var authorizationRuleName = TestUtilities.GenerateName(NotificationHubsManagementHelper.AuthorizationRulesPrefix);
                 string createPrimaryKey = HttpMockServer.GetVariable("CreatePrimaryKey", NotificationHubsManagementHelper.GenerateRandomKey());
-                var createAutorizationRuleParameter = new SharedAccessAuthorizationRuleCreateOrUpdateParameters()
+                var createAutorizationRuleParameter = new SharedAccessAuthorizationRule()
                 {
                     Location = location,
-                    Properties = new SharedAccessAuthorizationRuleProperties()
-                    {
-                        Rights = new List<AccessRights?>() { AccessRights.Listen, AccessRights.Send },
-                    }
+                    Rights = new List<AccessRights?>() { AccessRights.Listen, AccessRights.Send }
                 };
 
                 var jsonStr = NotificationHubsManagementHelper.ConvertObjectToJSon(createAutorizationRuleParameter);
 
-                var createNamespaceAuthorizationRuleResponse = NotificationHubsManagementClient.Namespaces.CreateOrUpdateAuthorizationRule(resourceGroup, namespaceName,
+                var createNamespaceAuthorizationRuleResponse = NotificationHubsManagementClient.AuthorizationRules.CreateOrUpdate(resourceGroup, namespaceName,
                     authorizationRuleName, createAutorizationRuleParameter);
                 Assert.NotNull(createNamespaceAuthorizationRuleResponse);
                 Assert.Equal(createNamespaceAuthorizationRuleResponse.Name, authorizationRuleName);
-                Assert.True(createNamespaceAuthorizationRuleResponse.Rights.Count == createAutorizationRuleParameter.Properties.Rights.Count);
-                foreach (var right in createAutorizationRuleParameter.Properties.Rights)
+                Assert.True(createNamespaceAuthorizationRuleResponse.Rights.Count == createAutorizationRuleParameter.Rights.Count);
+                foreach (var right in createAutorizationRuleParameter.Rights)
                 {
                     Assert.True(createNamespaceAuthorizationRuleResponse.Rights.Any(r => r == right));
                 }
 
                 //Get default namespace AuthorizationRules
-                var getNamespaceAuthorizationRulesResponse = NotificationHubsManagementClient.Namespaces.GetAuthorizationRule(resourceGroup, namespaceName, NotificationHubsManagementHelper.DefaultNamespaceAuthorizationRule);
+                var getNamespaceAuthorizationRulesResponse = NotificationHubsManagementClient.AuthorizationRules.Get(resourceGroup, namespaceName, NotificationHubsManagementHelper.DefaultNamespaceAuthorizationRule);
                 Assert.NotNull(getNamespaceAuthorizationRulesResponse);
                 Assert.Equal(getNamespaceAuthorizationRulesResponse.Name, NotificationHubsManagementHelper.DefaultNamespaceAuthorizationRule);
                 Assert.True(getNamespaceAuthorizationRulesResponse.Rights.Any(r => r == AccessRights.Listen));
@@ -90,30 +87,27 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.True(getNamespaceAuthorizationRulesResponse.Rights.Any(r => r == AccessRights.Manage));
 
                 //Get created namespace AuthorizationRules
-                getNamespaceAuthorizationRulesResponse = NotificationHubsManagementClient.Namespaces.GetAuthorizationRule(resourceGroup, namespaceName, authorizationRuleName);
+                getNamespaceAuthorizationRulesResponse = NotificationHubsManagementClient.AuthorizationRules.Get(resourceGroup, namespaceName, authorizationRuleName);
                 Assert.NotNull(getNamespaceAuthorizationRulesResponse);
                 Assert.Equal(getNamespaceAuthorizationRulesResponse.Name, authorizationRuleName);
-                Assert.True(getNamespaceAuthorizationRulesResponse.Rights.Count == createAutorizationRuleParameter.Properties.Rights.Count);
-                foreach (var right in createAutorizationRuleParameter.Properties.Rights)
+                Assert.True(getNamespaceAuthorizationRulesResponse.Rights.Count == createAutorizationRuleParameter.Rights.Count);
+                foreach (var right in createAutorizationRuleParameter.Rights)
                 {
                     Assert.True(getNamespaceAuthorizationRulesResponse.Rights.Any(r => r == right));
                 }
 
                 //Get all namespaces AuthorizationRules 
-                var getAllNamespaceAuthorizationRulesResponse = NotificationHubsManagementClient.Namespaces.ListAuthorizationRules(resourceGroup, namespaceName);
+                var getAllNamespaceAuthorizationRulesResponse = NotificationHubsManagementClient.AuthorizationRules.ListByNamespace(resourceGroup, namespaceName);
                 Assert.NotNull(getAllNamespaceAuthorizationRulesResponse);
-                Assert.True(getAllNamespaceAuthorizationRulesResponse.Count() > 1);
-                Assert.True(getAllNamespaceAuthorizationRulesResponse.Any(ns => ns.Name == authorizationRuleName));
-                Assert.True(getAllNamespaceAuthorizationRulesResponse.Any(auth => auth.Name == NotificationHubsManagementHelper.DefaultNamespaceAuthorizationRule));
+                Assert.True(getAllNamespaceAuthorizationRulesResponse.Value.Count() > 1);
+                Assert.True(getAllNamespaceAuthorizationRulesResponse.Value.Any(ns => ns.Name == authorizationRuleName));
+                Assert.True(getAllNamespaceAuthorizationRulesResponse.Value.Any(auth => auth.Name == NotificationHubsManagementHelper.DefaultNamespaceAuthorizationRule));
 
                 //Update namespace authorizationRule
-                var updateNamespaceAuthorizationRuleParameter = new SharedAccessAuthorizationRuleCreateOrUpdateParameters()
+                var updateNamespaceAuthorizationRuleParameter = new SharedAccessAuthorizationRule()
                 {
                     Location = location,
-                    Properties = new SharedAccessAuthorizationRuleProperties()
-                    {
-                        Rights = new List<AccessRights?>() { AccessRights.Listen},
-                    }
+                    Rights = new List<AccessRights?>() { AccessRights.Listen}
                 };
 
                 //uncomment after the bug fix
@@ -181,12 +175,12 @@ namespace NotificationHubs.Tests.ScenarioTests
                 Assert.Equal(listKeysAfterRegenerateResponse.PrimaryConnectionString, regenerateKeys.PrimaryConnectionString);
 
                 //Delete namespace authorizationRule
-                NotificationHubsManagementClient.Namespaces.DeleteAuthorizationRule(resourceGroup, namespaceName, authorizationRuleName);
+                NotificationHubsManagementClient.AuthorizationRules.Delete(resourceGroup, namespaceName, authorizationRuleName);
 
                 TestUtilities.Wait(TimeSpan.FromSeconds(5));
                 try
                 {
-                    NotificationHubsManagementClient.Namespaces.GetAuthorizationRule(resourceGroup, namespaceName, authorizationRuleName);
+                    NotificationHubsManagementClient.AuthorizationRules.Get(resourceGroup, namespaceName, authorizationRuleName);
                     Assert.True(false, "this step should have failed");
                 }
                 catch (CloudException ex)

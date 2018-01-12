@@ -6,40 +6,31 @@
 
 namespace Microsoft.Azure.Management.NotificationHubs.Models
 {
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
     using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
     /// <summary>
-    /// Description of a NotificationHub PNS Credentials.
+    /// NotificationHub patch parameters.
     /// </summary>
-    [Rest.Serialization.JsonTransformation]
-    public partial class PnsCredentialsResource : NHResource
+    public partial class NotificationHubPatchParameters
     {
         /// <summary>
-        /// Initializes a new instance of the PnsCredentialsResource class.
+        /// Initializes a new instance of the NotificationHubPatchParameters
+        /// class.
         /// </summary>
-        public PnsCredentialsResource()
+        public NotificationHubPatchParameters()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the PnsCredentialsResource class.
+        /// Initializes a new instance of the NotificationHubPatchParameters
+        /// class.
         /// </summary>
-        /// <param name="location">The geo-location where the resource
-        /// lives</param>
-        /// <param name="id">Fully qualified resource Id for the resource. Ex -
-        /// /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}</param>
-        /// <param name="name">The name of the resource</param>
-        /// <param name="type">The type of the resource. Ex-
-        /// Microsoft.Compute/virtualMachines or
-        /// Microsoft.Storage/storageAccounts.</param>
-        /// <param name="tags">Resource tags.</param>
-        /// <param name="sku">The sku of the created namespace</param>
+        /// <param name="authorizationRules">The AuthorizationRules of the
+        /// created NotificationHub</param>
         /// <param name="apnsCredential">The ApnsCredential of the created
         /// NotificationHub</param>
         /// <param name="wnsCredential">The WnsCredential of the created
@@ -52,9 +43,9 @@ namespace Microsoft.Azure.Management.NotificationHubs.Models
         /// NotificationHub</param>
         /// <param name="baiduCredential">The BaiduCredential of the created
         /// NotificationHub</param>
-        public PnsCredentialsResource(string location, string id = default(string), string name = default(string), string type = default(string), IDictionary<string, string> tags = default(IDictionary<string, string>), Sku sku = default(Sku), ApnsCredential apnsCredential = default(ApnsCredential), WnsCredential wnsCredential = default(WnsCredential), GcmCredential gcmCredential = default(GcmCredential), MpnsCredential mpnsCredential = default(MpnsCredential), AdmCredential admCredential = default(AdmCredential), BaiduCredential baiduCredential = default(BaiduCredential))
-            : base(location, id, name, type, tags, sku)
+        public NotificationHubPatchParameters(IList<SharedAccessAuthorizationRuleProperties> authorizationRules = default(IList<SharedAccessAuthorizationRuleProperties>), ApnsCredential apnsCredential = default(ApnsCredential), WnsCredential wnsCredential = default(WnsCredential), GcmCredential gcmCredential = default(GcmCredential), MpnsCredential mpnsCredential = default(MpnsCredential), AdmCredential admCredential = default(AdmCredential), BaiduCredential baiduCredential = default(BaiduCredential))
         {
+            AuthorizationRules = authorizationRules;
             ApnsCredential = apnsCredential;
             WnsCredential = wnsCredential;
             GcmCredential = gcmCredential;
@@ -70,50 +61,46 @@ namespace Microsoft.Azure.Management.NotificationHubs.Models
         partial void CustomInit();
 
         /// <summary>
+        /// Gets or sets the AuthorizationRules of the created NotificationHub
+        /// </summary>
+        [JsonProperty(PropertyName = "authorizationRules")]
+        public IList<SharedAccessAuthorizationRuleProperties> AuthorizationRules { get; set; }
+
+        /// <summary>
         /// Gets or sets the ApnsCredential of the created NotificationHub
         /// </summary>
-        [JsonProperty(PropertyName = "properties.apnsCredential")]
+        [JsonProperty(PropertyName = "apnsCredential")]
         public ApnsCredential ApnsCredential { get; set; }
 
         /// <summary>
         /// Gets or sets the WnsCredential of the created NotificationHub
         /// </summary>
-        [JsonProperty(PropertyName = "properties.wnsCredential")]
+        [JsonProperty(PropertyName = "wnsCredential")]
         public WnsCredential WnsCredential { get; set; }
 
         /// <summary>
         /// Gets or sets the GcmCredential of the created NotificationHub
         /// </summary>
-        [JsonProperty(PropertyName = "properties.gcmCredential")]
+        [JsonProperty(PropertyName = "gcmCredential")]
         public GcmCredential GcmCredential { get; set; }
 
         /// <summary>
         /// Gets or sets the MpnsCredential of the created NotificationHub
         /// </summary>
-        [JsonProperty(PropertyName = "properties.mpnsCredential")]
+        [JsonProperty(PropertyName = "mpnsCredential")]
         public MpnsCredential MpnsCredential { get; set; }
 
         /// <summary>
         /// Gets or sets the AdmCredential of the created NotificationHub
         /// </summary>
-        [JsonProperty(PropertyName = "properties.admCredential")]
+        [JsonProperty(PropertyName = "admCredential")]
         public AdmCredential AdmCredential { get; set; }
 
         /// <summary>
         /// Gets or sets the BaiduCredential of the created NotificationHub
         /// </summary>
-        [JsonProperty(PropertyName = "properties.baiduCredential")]
+        [JsonProperty(PropertyName = "baiduCredential")]
         public BaiduCredential BaiduCredential { get; set; }
 
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="ValidationException">
-        /// Thrown if validation fails
-        /// </exception>
-        public override void Validate()
-        {
-            base.Validate();
-        }
     }
 }
